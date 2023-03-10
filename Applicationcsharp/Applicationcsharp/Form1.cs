@@ -1,136 +1,87 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Applicationcsharp
+
+
+namespace WindowsFormsApp3
 {
     public partial class Form1 : Form
     {
+        private List<Rectangle> shapes;
+
         public Form1()
         {
             InitializeComponent();
-
-            this.Width = 750;
-            this.Height= 410;
-            bm = new Bitmap(pic.Width, pic.Height);
-            g=Graphics.FromImage(bm);
-            g.Clear(Color.White);
-            pic.Image = bm;
+            shapes = new List<Rectangle>();
         }
-
-        Bitmap bm;
-        Graphics g;
-        bool paint = false;
-        Point px, py;
-        Pen p = new Pen(Color.Black, 1);
-        Pen eraser = new Pen(Color.White, 10);
-        int index;
-        int x, y, sX, sY, cX, cY;
-        private void button1_Click(object sender, EventArgs e)
+        private void Form1_Paint(object sender, PaintEventArgs e)
         {
-        }
-
-        private void panel3_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-        private void Form1_DoubleClick(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pic_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            paint= true;
-            py= e.Location;
-
-            cX = e.X; 
-            cY = e.Y;
-        }
-        private void pic_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (paint)
+            foreach (var shape in shapes)
             {
-                if(index==1)
-                {
-                    px = e.Location;
-                    g.DrawLine(p,px, py);
-                    py = px;
-                }
-
-                if (index == 2)
-                {
-                    px = e.Location;
-                    g.DrawLine(eraser, px, py);
-                    py = px;
-                }
-            
-                pic.Refresh();
-                x= e.X; 
-                y= e.Y;
-                sX= e.X-cX;
-                sY= e.Y-cY;
+                shape.Draw(e.Graphics);
             }
-        }
-
-        private void pic_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pic_MouseUp(object sender, MouseEventArgs e)
-        {
-            paint= false;
-
-            sX = x - cX;
-            sY = y - cY;
-
-            if (index == 3)
-            {
-                g.DrawEllipse(p,cX,cY,sX,sY);
-            }
-            if (index == 4)
-            {
-                g.DrawRectangle(p, cX, cY, sX, sY);
-            }
-            if (index == 5)
-            {
-                g.DrawLine(p, cX, cY, x, y);
-            }
-        }
-        private void btn_pencil_Click(object sender, EventArgs e)
-        {
-            index= 1;
-
-        }
-        private void btn_eraser_click(object sender, EventArgs e)
-        {
-            index = 2;
-        }
-
-        private void btn_ellipse_Click(object sender, EventArgs e)
-        {
-            index = 3;
         }
         private void btn_rectangle_Click(object sender, EventArgs e)
         {
-            index = 4;
-        }
-        private void btn_line_Click(object sender, EventArgs e)
-        {
-            index = 5;
+            shapes.Add(new RectangleShape(new Point(10, 10), new Size(50, 50)));
+            Invalidate();
         }
 
+        public abstract class Shape
+        {
+            protected Point location;
+            protected Size size;
+
+            public Shape(Point location, Size size)
+            {
+                this.location = location;
+                this.size = size;
+            }
+
+            public abstract double CalculateArea();
+
+            public abstract void Draw(Graphics graphics);
+
+            public virtual void Move(int x, int y)
+            {
+                location.X += x;
+                location.Y += y;
+            }
+        }
+        public class RectangleShape : Shape
+        {
+           
+
+            public RectangleShape(Point location, Size size) : base(location, size)
+            {
+
+            }
+
+            public override double CalculateArea()
+            {
+                return size.Width * size.Height;
+            }
+
+            public override void Draw(Graphics graphics)
+            {
+                graphics.DrawRectangle(Pens.Black, new Rectangle(location, size));
+            }
+        }
+        private void btn_color_picker_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            
+            
+        }
+
+        private void btn_triangle_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }
+
